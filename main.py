@@ -1,38 +1,23 @@
-
-import os
 from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
+import os
 from dotenv import load_dotenv
-from parser import scrape_top_tweet
 
 load_dotenv()
-TOKEN = os.getenv("TELEGRAM_TOKEN")
 
-accounts = [
-    "Shashkov_BTC", "vasily_sumanov", "WrappedBTC",
-    "Optimism", "SonicLabs", "eulerfinance",
-    "unichain", "KrystalDeFi"
-]
+TOKEN = os.getenv("BOT_TOKEN")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Чекаю топ-твиты...")
+    await update.message.reply_text("Бот успешно запущен! 🔥")
 
-    for acc in accounts:
-        print(f"Чекаю @{acc}...")
-        try:
-            tweet = await scrape_top_tweet(acc)
-            if tweet:
-                await update.message.reply_text(tweet[:4096])
-            else:
-                await update.message.reply_text(f"@{acc}: ничего не найдено")
-        except Exception as e:
-            print(f"Ошибка @{acc}: {e}")
+app = ApplicationBuilder().token(TOKEN).build()
 
-def main():
-    print("Бот запущен")
-    app = Application.builder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.run_polling()
+app.add_handler(CommandHandler("start", start))
 
 if __name__ == "__main__":
-    main()
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=8000,
+        webhook_url=WEBHOOK_URL,
+    )
