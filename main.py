@@ -1,5 +1,5 @@
 from telegram import Update
-from telegram.ext import Application, ApplicationBuilder, CommandHandler, ContextTypes
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from parser import scrape_top_tweet
 import os
 from dotenv import load_dotenv
@@ -24,10 +24,12 @@ if __name__ == "__main__":
     async def main():
         await app.initialize()
         await app.start()
+        await app.bot.set_webhook(WEBHOOK_URL)
         await app.updater.start_webhook(
             listen="0.0.0.0",
             port=8000,
             webhook_url=WEBHOOK_URL,
         )
         await app.updater.idle()
+
     asyncio.run(main())
